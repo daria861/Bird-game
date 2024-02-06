@@ -30,8 +30,8 @@ bg_move = 3
 
 IMAGE_PATH = "Goose"
 PLAYER_IMAGES = os.listdir(IMAGE_PATH)
-ENEMY_IMAGE = pygame.transform.scale(pygame.image.load('enemy.png'), (70, 30))
-BONUS_IMAGE = pygame.transform.scale(pygame.image.load('bonus.png'), (80, 100))
+#ENEMY_IMAGE = pygame.transform.scale(pygame.image.load('enemy.png'), (70, 30))
+#BONUS_IMAGE = pygame.transform.scale(pygame.image.load('bonus.png'), (80, 100))
 
 #print(PLAYER_IMAGES)
 
@@ -41,6 +41,7 @@ player_size = (20, 20)
 player = pygame.image.load('player.png').convert_alpha()  #pygame.Surface(player_size)
 #player.fill(COLOR_BLACK)
 player_rect = player.get_rect()
+player_rect.center = main_display.get_rect().center
 #player_speed = [1, 1]
 player_move_down = [0, 4]
 player_move_up = [0, -4]
@@ -65,20 +66,24 @@ image_index = 0
 
 #enemy
 def create_enemy():
-    enemy_size = (30, 30)
-    enemy = pygame.Surface(enemy_size)
-    enemy.fill(COLOR_BLUE)
-    enemy_rect = pygame.Rect(WIDTH, random.randint(15, HEIGHT-15) + 10, *enemy_size)
+    #enemy_size = (30, 30)
+    enemy = pygame.image.load('enemy.png').convert_alpha() #pygame.Surface(enemy_size)
+    enemy_height = enemy.get_height()
+    enemy_rect = pygame.Rect(WIDTH, 
+                            random.randint(enemy_height, HEIGHT - enemy_height), 
+                            *enemy.get_size())
     enemy_move = [random.randint(-8, -4), 0 ]
     return [enemy, enemy_rect, enemy_move]
 
 #bonus
 
 def create_bonus():
-    bonus_size = (40, 40)
-    bonus = pygame.Surface(bonus_size)
-    bonus.fill(COLOR_GREEN)
-    bonus_rect = pygame.Rect(random.randint(15, WIDTH-15), 20, *bonus_size)
+    #bonus_size = (40, 40)
+    bonus = pygame.image.load('bonus.png').convert_alpha() #pygame.Surface(bonus_size)
+    bonus_width = bonus.get_width()
+    bonus_rect = pygame.Rect(random.randint(bonus_width, 
+                            WIDTH - bonus_width), -bonus.get_height(),
+                            *bonus.get_size())
     bonus_move = [0, random.randint(4, 8)]
     return [bonus, bonus_rect, bonus_move]
     
@@ -136,8 +141,8 @@ while playing:
 
     for enemy in enemies:
         enemy[1] = enemy[1].move(enemy[2])
-        #main_display.blit(enemy[0], enemy[1])
-        main_display.blit(ENEMY_IMAGE,  enemy[1])
+        main_display.blit(enemy[0], enemy[1])
+        #main_display.blit(ENEMY_IMAGE,  enemy[1])
 
         if player_rect.colliderect(enemy[1]):
             #print('Boom')
@@ -146,8 +151,8 @@ while playing:
 
     for bonus in bonuses:
         bonus[1] = bonus[1].move(bonus[2])
-        #main_display.blit(bonus[0], bonus[1])
-        main_display.blit(BONUS_IMAGE, bonus[1])
+        main_display.blit(bonus[0], bonus[1])
+        #main_display.blit(BONUS_IMAGE, bonus[1])
 
         if player_rect.colliderect(bonus[1]):
             #print('Yep')
@@ -163,7 +168,7 @@ while playing:
     pygame.display.flip()
 
     for enemy in enemies:
-        if enemy[1].left < 0:
+        if enemy[1].right < 0:
             enemies.pop(enemies.index(enemy))
 
     
